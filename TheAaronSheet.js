@@ -1,5 +1,5 @@
 /* ---- BEGIN: TheAaronSheet.js ---- */
-// Github:   https://github.com/shdwjk/
+// Github:   https://github.com/shdwjk/TheAaronSheet/blob/master/TheAaronSheet.js
 // By:       The Aaron, Arcane Scriptomancer
 // Contact:  https://app.roll20.net/users/104025/the-aaron
 
