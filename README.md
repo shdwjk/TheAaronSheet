@@ -36,7 +36,7 @@ on('change:repeating_weapons',function(){
 All provided utility functions are referenced from the `util` property of the `TAS` object.
 
 ```javascript
-var ex = TAS.util.uniq( arg );
+var ex = TAS.util.unique( arg );
 ```
 
 #### `TAS.util.unique( argument )`
