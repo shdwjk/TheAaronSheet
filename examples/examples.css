@@ -1,31 +1,34 @@
-	.sheet-headers {
-		border-bottom: 1px solid black;
-	}
-	.sheet-headers div{
-		font-weight: bold;
-        display:  inline-block;
-	}
-	.sheet-inventory-row .sheet-name {
-		width: 15em;
-	}
-	.sheet-inventory-row .sheet-quantity, 
-	.sheet-inventory-row .sheet-weight, 
-	.sheet-inventory-row .sheet-totalweight, 
-	.sheet-inventory-row .sheet-cost, 
-	.sheet-inventory-row .sheet-cost, 
-	.sheet-inventory-row .sheet-runningtotal,
-	.sheet-sumtotalweight,
-	.sheet-sumtotalcost {
-		width: 5em;
-	}
-	.sheet-summary {
-		width: 30em;
-		height: 5em;
-	}
-    .sheet-footer {
-        border-top: 1px solid black;
-    }
-    .sheet-total {
-        display: inline-block;
-        font-weight:bold;
-    }
+.sheet-missing-css {
+	display: none;
+}
+.sheet-headers {
+	border-bottom: 1px solid black;
+}
+.sheet-headers div{
+	font-weight: bold;
+	display:  inline-block;
+}
+.sheet-inventory-row .sheet-name {
+	width: 15em;
+}
+.sheet-inventory-row .sheet-quantity, 
+.sheet-inventory-row .sheet-weight, 
+.sheet-inventory-row .sheet-totalweight, 
+.sheet-inventory-row .sheet-cost, 
+.sheet-inventory-row .sheet-cost, 
+.sheet-inventory-row .sheet-runningtotal,
+.sheet-sumtotalweight,
+.sheet-sumtotalcost {
+	width: 5em;
+}
+.sheet-summary {
+	width: 30em;
+	height: 5em;
+}
+.sheet-footer {
+	border-top: 1px solid black;
+}
+.sheet-total {
+	display: inline-block;
+	font-weight:bold;
+}

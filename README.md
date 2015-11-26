@@ -228,17 +228,7 @@ Currently, no utility functions are needed as we now have access to underscore.j
 This is a simple total operation for a named field in a repeating group. For the full working source, see [Example1: repeatingSimpleSum()](examples/example1_repeatingSimpleSum.html).
 
 ```html
-<fieldset class="repeating_inventory">
-    <table>			
-		<tr border="1">	
-			<td width="220px"><input type="text" name="attr_item" placeholder="item name" title="item name" /></td>	
-			<td><input type="text" style="width:50px" name="attr_weight" value="0" title="item's weight" /></td>
-		</tr>
-	</table>
-</fieldset>
-<input type="text" name="attr_total_weight_carried" value="0" style="width:42%" title="total equipment weight" /> 
-
-<script type='text/worker'>
+<script type="text/worker">
 
 // [ Contents of TheAaronSheet.js ] //
 
@@ -252,3 +242,107 @@ on('change:repeating_inventory', function(){
 
 
 
+### Example 2: `TAS.repeating()` -- a Trivial Example
+
+This is a trivial example showing just the setting up of attributes and fields.  It will write the IDs and attrbute names to the console using the `.tap()` operation. See [Example2: TAS.repeating() -- a Trivial Example](examples/example2_repeatingSimpleExample.html).
+
+```html
+<script type="text/worker">
+
+// [ Contents of TheAaronSheet.js ] //
+
+
+on('change:repeating_inventory', function(){
+    TAS.repeating('inventory')  //< set the repeating group we are using
+        .attrs('total_weight')  //< specify we want access to the total_weight attribute
+        .fields('item','weight') //< specify we want the item and weight repeating fields 
+        .tap(function(rows,attrs){  //< tap just calls a function with the attributes and fields
+            console.log(_.keys(rows));  //< log the ids for the rows
+            console.log(_.keys(attrs)); //< log the names of the attributes
+        })
+        .execute();  //< tell TAS it has been configured and can run now.
+});
+
+</script>
+```
+
+### Example 3: `TAS.repeating()` -- a Complex Example
+
+This is a complex example that is using each of the 4 possible operations.  See [Example 3: TAS.repeating() -- a Complex Example](examples/example3_repeatingComplexExample.html).
+
+```html
+<script type="text/worker">
+
+// [ Contents of TheAaronSheet.js ] //
+
+
+on('change:repeating_inventory', function(){
+
+// all of these operations could likely have been done in a single reduce operation, but
+// doing them in multiple operations shows that this is something that can be done.
+
+    TAS.repeating('inventory')
+        .attrs('total_weight','total_cost','summary')  //< getting the attributes for the totals
+        .fields('item','quantity','weight','totalweight','cost','runningtotal') //< specifying the fields we care about
+        .tap(function(rows,attrs){
+			attrs.summary=_.pluck(_.values(rows),'item').join(', ');  //< grabing all the names of items and setting summary
+        })
+		.each(function(r){
+			r.D[3].totalweight=(r.I.quantity*r.F.weight);  //< for each row, set the total weight with 3 decimal places (use integer quantity and floating weight)
+		})
+		.map(function(r){
+			return r.F.weight*r.I.quantity; //< calculate the weight for the row (could have used the totalweight)
+		},function(m,r,a){
+            a.D[3].total_weight=_.reduce(m,function(m,v){ //<sum the array of total weights and set it on the total weight attribute
+				return m+v;
+			},0);
+		})
+		.reduce(function(m,r){
+			m+=(r.I.quantity*r.F.cost); //< Generate a running cost
+			r.D[2].runningtotal=m; //< set it for the current row (the running part)
+			return m;
+		},0,function(m,r,a){
+			a.D[2].total_cost=m;  //< take the final sum and set it on the total cost attribute
+		})
+        .execute();  //< begin executing the above operations
+
+});
+
+</script>
+```
+
+
+### Example 4: `TAS.repeating()` -- a Complex Example Rewritten
+
+This is Example 3 rewritten to use only a single operation, `.reduce()`.  See [Example 4: TAS.repeating() -- a Complex Example Rewritten](examples/example4_repeatingComplexExampleRewritten.html).
+
+```html
+<script type="text/worker">
+
+// [ Contents of TheAaronSheet.js ] //
+
+
+on('change:repeating_inventory', function(){
+
+    TAS.repeating('inventory')
+        .attrs('total_weight','total_cost','summary')  
+        .fields('item','quantity','weight','totalweight','cost','runningtotal') 
+        .reduce(function(m,r){
+            m.weight+=(r.F.weight*r.I.quantity);
+            r.D[3].totalweight=(r.F.weight*r.I.quantity);
+            m.cost+=(r.F.cost*r.I.quantity);
+            r.D[2].runningtotal=m.cost;
+            m.desc.push(r.item+(r.I.quantity>1 ? ' (x'+r.S.quantity+')' : ''));
+            return m;
+            
+        },{weight:0,cost:0, desc: []},function(m,r,a){
+            a.summary=m.desc.join(', ');
+            a.D[3].total_weight=m.weight;
+            a.D[2].total_cost=m.cost;
+        })
+        .execute(); 
+
+});
+
+</script>
+```

@@ -7,7 +7,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.0',
-        lastUpdate = 1448516791,
+        lastUpdate = 1448523710,
 
 		queuedUpdates = {}, //< Used for delaying saves till the last momment.
 

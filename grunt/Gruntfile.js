@@ -31,7 +31,13 @@ module.exports = function(grunt) {
                     'example_src/inventory.html',
                     '../TheAaronSheet.js',
                     'example_src/repeatingComplexExample.events.html'
+               ],
+                '../examples/example4_repeatingComplexExampleRewritten.html': [
+                    'example_src/inventory.html',
+                    '../TheAaronSheet.js',
+                    'example_src/repeatingComplexExampleRewritten.events.html'
                ]
+
 
             }
         }
