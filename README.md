@@ -79,6 +79,8 @@ The following are arguments that are passed to the Operation functions.  You may
 
 
 ##### Common Arguments to Operation Functions
+The following arguments are passed to various of the operations' functions.
+
 | Argument | Description |
 | -------- | ----------- |
 | `Row` | This represents the row of the repeating group.  Each of the fields requested will be a property on this object.  Additionally, it has the special `.id` property which will contain the repeating row's id.  `.id` does not show up in iteration. |
@@ -88,7 +90,7 @@ The following are arguments that are passed to the Operation functions.  You may
 | `Memo` | The reduce operation receives the result of the execution of the function on the previous row. |
 | `Results` | An array of each of the values returned from calling the `Func` function. |
 
-##### `.tap( Final [, Context] )` (Alias: `.go()`)
+##### `.tap( Final [, Context] )` (Alias: `.do()`)
 This is the simplist operation on the `.repeating()` interface.  The `Final` function will be called with the parameters `RowSet`, `AttrSet`.
 ```javascript
 TAS.repeating('inventory')
@@ -147,7 +149,7 @@ TAS.repeating('inventory')
     .execute();
 ```
 
-#### `.execute()`
+#### `.execute()` (Aliases: `.go()`, `.run()`)
 When you have configured all of your Attributes, Fields, and Operations, you call `.execute()` to do all of the work.  Nothing will be done until this function is called.  It takes no arguments and returns nothing, but is responsible for doing all the work of getting and setting attributes and fields, and calling each of the operations' functions.  All of the sets will be batched and executed as a single `setAttrs()` at the end of `execute()`, which should provide a preformance increase.
 
 #### Using `AttrSet` and `Row`
