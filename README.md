@@ -91,7 +91,7 @@ The following arguments are passed to various of the operations' functions.
 | `Results` | An array of each of the values returned from calling the `Func` function. |
 
 ##### `.tap( Final [, Context] )` (Alias: `.do()`)
-This is the simplist operation on the `.repeating()` interface.  The `Final` function will be called with the parameters `RowSet`, `AttrSet`.
+This is the simplist operation on the `.repeating()` interface.  The `Final` function will be called once with the parameters `RowSet`, `AttrSet`.
 ```javascript
 TAS.repeating('inventory')
     .attrs('total_weight','total_cost')
@@ -185,7 +185,7 @@ You can use 0-9 to specify how many decimal places you want.  *Note:* this retur
 | `.S` | String format.  Whatever value is stored in the property is converted to a string. |
 | `.I` | Integer format. The equivolent of `parseInt( value, 10 )`.  For numbers like 1.53, this will truncation the .53, use a Floating-Point format. |
 | `.F` | Floating-Point format.  The equivolent of `parseFloat( value )`.  Good for math, but see the Decimal fomrat for presentation. |
-| `.D[#] | Decimal format.  The result will be a number with the given amount of decimal places from 0-9.  The type will be a string, so use Floating-Point format if you need to do math. |
+| `.D[#]` | Decimal format.  The result will be a number with the given amount of decimal places from 0-9.  The type will be a string, so use Floating-Point format if you need to do math. |
 
 ##### Writing Values
 Writing values is exactly like you would expect, you simply set the property.
