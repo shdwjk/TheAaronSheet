@@ -1,3 +1,32 @@
+<h3>Inventory</h3>
+
+<div class="inventory-row headers">	
+    <div class="name" >Item</div>
+    <div class="quantity" >Qty</div>
+    <div class="weight" >Weight</div>
+    <div class="totalweight" >Total Weight</div>
+    <div class="cost" >Cost($)</div>
+    <div class="runningtotal" >Running Total($)</div>
+</div>
+<fieldset class="repeating_inventory">
+	<div class="inventory-row">	
+		<input class="name" type="text" name="attr_item" placeholder="item name" title="name" />
+		<input class="quantity" type="text" name="attr_quantity" value="0" title="quantity" />
+		<input class="weight" type="text" name="attr_weight" value="0" title="weight" />
+		<input class="totalweight" type="text" name="attr_totalweight" value="0" title="totalweight" />
+		<input class="cost" type="text" name="attr_cost" value="0" title="cost" />
+		<input class="runningtotal" type="text" name="attr_runningtotal" value="0" title="running total" />
+	</div>
+</fieldset>
+
+<div class="footer">
+	<div class="total">Total Weight<br><input class="sumtotalweight" type="text" name="attr_total_weight" value="0" title="total weight" /></div>
+	<div class="total">Total Cost<br><input class="sumtotalcost" type="text" name="attr_total_cost" value="0" title="total cost" /></div>
+	<div class="total">Summary:<br><textarea class="summary" type="textarea" name="attr_summary" title="summary"/></textarea>
+</div>
+
+<script type="text/worker">
+
 /* ---- BEGIN: TheAaronSheet.js ---- */
 // Github:   https://github.com/shdwjk/TheAaronSheet/blob/master/TheAaronSheet.js
 // By:       The Aaron, Arcane Scriptomancer
@@ -332,3 +361,17 @@ var TAS = TAS || (function(){
 
 /* ---- END: TheAaronSheet.js ---- */
 
+
+
+on('change:repeating_inventory', function(){
+    TAS.repeating('inventory')  //< set the repeating group we are using
+        .attrs('total_weight')  //< specify we want access to the total_weight attribute
+        .fields('item','weight') //< specify we want the item and weight repeating fields 
+        .tap(function(rows,attrs){  //< tap just calls a function with the attributes and fields
+            console.log(_.keys(rows));  //< log the ids for the rows
+            console.log(_.keys(attrs)); //< log the names of the attributes
+        })
+        .execute();  //< tell TAS it has been configured and can run now.
+});
+
+</script>

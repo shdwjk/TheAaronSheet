@@ -1,0 +1,28 @@
+<h3>Inventory</h3>
+
+<div class="inventory-row headers">	
+    <div class="name" >Item</div>
+    <div class="quantity" >Qty</div>
+    <div class="weight" >Weight</div>
+    <div class="totalweight" >Total Weight</div>
+    <div class="cost" >Cost($)</div>
+    <div class="runningtotal" >Running Total($)</div>
+</div>
+<fieldset class="repeating_inventory">
+	<div class="inventory-row">	
+		<input class="name" type="text" name="attr_item" placeholder="item name" title="name" />
+		<input class="quantity" type="text" name="attr_quantity" value="0" title="quantity" />
+		<input class="weight" type="text" name="attr_weight" value="0" title="weight" />
+		<input class="totalweight" type="text" name="attr_totalweight" value="0" title="totalweight" />
+		<input class="cost" type="text" name="attr_cost" value="0" title="cost" />
+		<input class="runningtotal" type="text" name="attr_runningtotal" value="0" title="running total" />
+	</div>
+</fieldset>
+
+<div class="footer">
+	<div class="total">Total Weight<br><input class="sumtotalweight" type="text" name="attr_total_weight" value="0" title="total weight" /></div>
+	<div class="total">Total Cost<br><input class="sumtotalcost" type="text" name="attr_total_cost" value="0" title="total cost" /></div>
+	<div class="total">Summary:<br><textarea class="summary" type="textarea" name="attr_summary" title="summary"/></textarea>
+</div>
+
+<script type="text/worker">

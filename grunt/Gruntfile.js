@@ -14,14 +14,25 @@ module.exports = function(grunt) {
       '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
       'YOUR_NAME; Licensed MIT */\n',
     // Task configuration.
-    template: {
+    concat: {
         examples: {
-            options: {
-                procces: {data: {theAaronSheet: grunt.file.read('../TheAaronSheet.js')}}
-            },
             files: {
-                'example_src/example1_repeatingSimpleSum.template': ['../examples/example1_repeatingSimpleSum.html'],
-                'example_src/example2_repeating_object.template': ['../examples/example2_repeating_object.html']
+                '../examples/example1_repeatingSimpleSum.html': [
+                    'example_src/inventory.html',
+                    '../TheAaronSheet.js',
+                    'example_src/repeatingSimpleSum.events.html'
+                ],
+                '../examples/example2_repeatingSimpleExample.html': [
+                    'example_src/inventory.html',
+                    '../TheAaronSheet.js',
+                    'example_src/repeatingSimpleExample.events.html'
+               ],
+                '../examples/example3_repeatingComplexExample.html': [
+                    'example_src/inventory.html',
+                    '../TheAaronSheet.js',
+                    'example_src/repeatingComplexExample.events.html'
+               ]
+
             }
         }
     }
@@ -79,9 +90,9 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
 //      'jshint',
 //      'nodeunit',
-//      'concat',
+      'concat'
 //      'uglify',
-      'template'
+//      'template'
   ]);
 
 };
