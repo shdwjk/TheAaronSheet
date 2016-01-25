@@ -7,7 +7,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.0',
-        lastUpdate = 1448523710,
+        lastUpdate = 1453071111,
 
 		queuedUpdates = {}, //< Used for delaying saves till the last momment.
 
@@ -322,7 +322,9 @@ var TAS = TAS || (function(){
             .execute();
     };
 
-    console.log('-=> TheAaronSheet v'+version+' <=-  ['+(new Date(lastUpdate*1000))+']');
+	console.log('%c•.¸¸.•*´¨`*•.¸¸.•*´¨`*•.¸  The Aaron Sheet  v'+version+'  ¸.•*´¨`*•.¸¸.•*´¨`*•.¸¸.•','background: linear-gradient(to right,green,white,white,green); color:black;text-shadow: 0 0 8px white;');
+	console.log('%c•.¸¸.•*´¨`*•.¸¸.•*´¨`*•.¸  Last update: '+(new Date(lastUpdate*1000))+'  ¸.•*´¨`*•.¸¸.•*´¨`*•.¸¸.•','background: linear-gradient(to right,green,white,white,green); color:black;text-shadow: 0 0 8px white;');
+
 
     return {
         repeatingSimpleSum: repeatingSimpleSum,
