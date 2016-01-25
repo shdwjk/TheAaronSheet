@@ -10,4 +10,3 @@ on('change:repeating_inventory', function(){
         .execute();  //< tell TAS it has been configured and can run now.
 });
 
-</script>

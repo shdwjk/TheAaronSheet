@@ -21,4 +21,3 @@ on('change:repeating_inventory', function(){
 
 });
 
-</script>

@@ -1,4 +1,3 @@
-
 on('change:repeating_inventory', function(){
 
 // all of these operations could likely have been done in a single reduce operation, but
@@ -30,5 +29,3 @@ on('change:repeating_inventory', function(){
         .execute();  //< begin executing the above operations
 
 });
-
-</script>

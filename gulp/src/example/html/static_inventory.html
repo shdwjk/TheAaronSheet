@@ -1,0 +1,24 @@
+
+<h3>Static Inventory</h3>
+
+<div class="inventory-row headers">	
+    <div class="name" >Item</div>
+    <div class="quantity" >Qty</div>
+    <div class="weight" >Weight</div>
+    <div class="totalweight" >Total Weight</div>
+    <div class="cost" >Cost($)</div>
+    <div class="runningtotal" >Running Total($)</div>
+</div>
+
+<% _.forEach(_.range(10), function(row_number){ %>
+<div class="inventory-row">	
+	<input class="name" type="text" name="attr_static_inventory_<%= row_number %>_item" placeholder="item name" title="name" />
+	<input class="quantity" type="text" name="attr_static_inventory_<%= row_number %>_quantity" value="0" title="quantity" />
+	<input class="weight" type="text" name="attr_static_inventory_<%= row_number %>_weight" value="0" title="weight" />
+	<input class="totalweight" type="text" name="attr_static_inventory_<%= row_number %>_totalweight" value="0" title="totalweight" />
+	<input class="cost" type="text" name="attr_static_inventory_<%= row_number %>_cost" value="0" title="cost" />
+	<input class="runningtotal" type="text" name="attr_static_inventory_<%= row_number %>_runningtotal" value="0" title="running total" />
+</div>
+<% }); %>
+
+<hr>
