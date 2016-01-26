@@ -1,5 +1,5 @@
 // enable debug logging
-TAS.config({logging.debug: true});
+TAS.config({logging:{debug: true}});
 
 (function(){
 	'use strict';
