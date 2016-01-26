@@ -37,6 +37,6 @@ TAS.config({logging:{debug: true}});
 	TAS.debug(object);
 
 	console.log('==> Multiple Argument Support <=====================================');
-	TAS.debug(string,integer,NaN,anonymousFunction,arguments);
+	TAS.notice(string,integer,NaN,anonymousFunction,arguments);
 
 }(1,2,'taco',['water','wine']));

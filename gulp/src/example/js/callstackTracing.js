@@ -10,8 +10,6 @@ var callback1 = function StandAloneFunction(){
 	}));
 };
 
-on('sheet:opened',TAS._fn('sheet:opened - first',callback1));
-on('sheet:opened',TAS._fn('sheet:opened - second',callback1));
+on('sheet:opened',TAS._fn('sheet:opened',callback1));
 on('change:repeating_inventory',TAS._fn('change:repeating_inventory - test',callback1));
-
 

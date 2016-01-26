@@ -7,7 +7,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.1',
-        lastUpdate = 1453793192,
+        lastUpdate = 1453794214,
 
         loggingSettings = {
             debug: {
@@ -214,7 +214,12 @@ var TAS = TAS || (function(){
     },
 
     setConfigOption = function(options){
-        config = _.defaults(options,config);
+        var newconf =_.defaults(options,config);
+        newconf.logging=_.defaults(
+            (options && options.logging)||{},
+            config.logging
+        );
+        config=newconf;
     },
     
     debugMode = function(){

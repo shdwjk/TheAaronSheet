@@ -48,7 +48,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.1',
-        lastUpdate = 1453793192,
+        lastUpdate = 1453794214,
 
         loggingSettings = {
             debug: {
@@ -255,7 +255,12 @@ var TAS = TAS || (function(){
     },
 
     setConfigOption = function(options){
-        config = _.defaults(options,config);
+        var newconf =_.defaults(options,config);
+        newconf.logging=_.defaults(
+            (options && options.logging)||{},
+            config.logging
+        );
+        config=newconf;
     },
     
     debugMode = function(){
@@ -684,10 +689,8 @@ var callback1 = function StandAloneFunction(){
 	}));
 };
 
-on('sheet:opened',TAS._fn('sheet:opened - first',callback1));
-on('sheet:opened',TAS._fn('sheet:opened - second',callback1));
+on('sheet:opened',TAS._fn('sheet:opened',callback1));
 on('change:repeating_inventory',TAS._fn('change:repeating_inventory - test',callback1));
-
 
 
 

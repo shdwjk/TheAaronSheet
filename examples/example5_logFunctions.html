@@ -48,7 +48,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.1',
-        lastUpdate = 1453793192,
+        lastUpdate = 1453794214,
 
         loggingSettings = {
             debug: {
@@ -255,7 +255,12 @@ var TAS = TAS || (function(){
     },
 
     setConfigOption = function(options){
-        config = _.defaults(options,config);
+        var newconf =_.defaults(options,config);
+        newconf.logging=_.defaults(
+            (options && options.logging)||{},
+            config.logging
+        );
+        config=newconf;
     },
     
     debugMode = function(){
@@ -711,7 +716,7 @@ TAS.config({logging:{debug: true}});
 	TAS.debug(object);
 
 	console.log('==> Multiple Argument Support <=====================================');
-	TAS.debug(string,integer,NaN,anonymousFunction,arguments);
+	TAS.notice(string,integer,NaN,anonymousFunction,arguments);
 
 }(1,2,'taco',['water','wine']));
 
