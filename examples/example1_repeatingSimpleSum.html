@@ -48,26 +48,286 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.0',
-        lastUpdate = 1453071111,
+        lastUpdate = 1453792798,
 
+        loggingSettings = {
+            debug: {
+                key:     'debug',
+                title:   'DEBUG',
+                color: {
+                    bgLabel: '#7732A2',
+                    label:   '#F2EF40',
+                    bgText:  '#FFFEB7',
+                    text:    '#7732A2'
+                }
+            },
+            error: {
+                key:     'error',
+                title:   'Error',
+                color: {
+                    bgLabel: '#C11713',
+                    label:   'white',
+                    bgText:  '#C11713',
+                    text:    'white'
+                }
+            },
+            warn: {
+                key:     'warn',
+                title:   'Warning',
+                color: {
+                    bgLabel: '#F29140',
+                    label:   'white',
+                    bgText:  '#FFD8B7',
+                    text:    'black'
+                }
+            },
+            info: {
+                key:     'info',
+                title:   'Info',
+                color: {
+                    bgLabel: '#413FA9',
+                    label:   'white',
+                    bgText:  '#B3B2EB',
+                    text:    'black'
+                }
+            },
+            notice: {
+                key:     'notice',
+                title:   'Notice',
+                color: {
+                    bgLabel: '#33C133',
+                    label:   'white',
+                    bgText:  '#ADF1AD',
+                    text:    'black'
+                }
+            },
+            log: {
+                key:     'log',
+                title:   'Log',
+                color: {
+                    bgLabel: '#f2f240',
+                    label:   'black',
+                    bgText:  '#ffff90',
+                    text:    'black'
+                }
+            },
+            callstack: {
+                key:     'TAS',
+                title:   'function',
+                color: {
+                    bgLabel: '#413FA9',
+                    label:   'white',
+                    bgText:  '#B3B2EB',
+                    text:    'black'
+                }
+            },
+            callstack_async: {
+                key:     'TAS',
+                title:   'ASYNC CALL',
+                color: {
+                    bgLabel: '#413FA9',
+                    label:   'white',
+                    bgText:  '#413FA9',
+                    text:    'white'
+                }
+            },
+            TAS: {
+                key:     'TAS',
+                title:   'TAS',
+                color: {
+                    bgLabel: 'grey',
+                    label:   'black;background:linear-gradient(#304352,#d7d2cc,#d7d2cc,#d7d2cc,#304352)',
+                    bgText:  'grey',
+                    text:    'black;background:linear-gradient(#304352,#d7d2cc,#d7d2cc,#d7d2cc,#304352)'
+                }
+            }
+        },
+
+
+        config = {
+            debugMode: false,
+            logging: {
+                log: true,
+                notice: true,
+                info: true,
+                warn: true,
+                error: true,
+                debug: false
+            }
+        },
+
+        callstackRegistry = [],
 		queuedUpdates = {}, //< Used for delaying saves till the last momment.
 
-	log = function(){
-        _.each(arguments,function(m){
-            switch(typeof m){
+    complexType = function(o){
+        switch(typeof o){
+            case 'string':
+                return 'string';
+            case 'boolean':
+                return 'boolean';
+            case 'number':
+                return (_.isNaN(o) ? 'NaN' : (o.toString().match(/\./) ? 'decimal' : 'integer'));
+            case 'function':
+                return 'function: '+(o.name ? o.name+'()' : '(anonymous)');
+            case 'object':
+                return (_.isArray(o) ? 'array' : (_.isArguments(o) ? 'arguments' : ( _.isNull(o) ? 'null' : 'object')));
+            default:
+                return typeof o;
+        }
+    },
+
+	dataLogger = function(primaryLogger,secondaryLogger,data){
+        _.each(data,function(m){
+            var type = complexType(m);
+            switch(type){
                 case 'string':
-                    console.log('<TAS> :: '+m);
+                    primaryLogger(m);
+                    break;
+                case 'undefined':
+                case 'null':
+                case 'NaN':
+                    primaryLogger('['+type+']');
                     break;
                 case 'number':
-                    console.log('<TAS> :: [number]: '+m);
+                case 'not a number':
+                case 'integer':
+                case 'decimal':
+                case 'boolean':
+                    primaryLogger('['+type+']: '+m);
                     break;
                 default:
-                    console.log('<TAS> :: ['+typeof m +']:');
-                    console.log(m);
-                    console.log('<TAS> :: =========================================================');
+                    primaryLogger('['+type+']:=========================================');
+                    secondaryLogger(m);
+                    primaryLogger('=========================================================');
+                    break;
             }
         });
 	},
+
+
+    colorLog = function(options){
+        var coloredLoggerFunction,
+            key = options.key,
+            label = options.title || 'TAS',
+            lBGColor = (options.color && options.color.bgLabel) || 'blue',
+            lTxtColor = (options.color && options.color.label) || 'white',
+            mBGColor = (options.color && options.color.bgText) || 'blue',
+            mTxtColor = (options.color && options.color.text) || 'white';
+
+        coloredLoggerFunction = function(message){
+            console.log(
+                '%c '+label+': %c '+message,
+                'background-color: '+lBGColor+';color: '+lTxtColor+'; font-weight:bold;',
+                'background-color: '+mBGColor+';color: '+mTxtColor+';'
+            ); 
+        };
+        return function(){
+            if('TAS'===key || config.logging[key]){
+               dataLogger(coloredLoggerFunction,function(m){console.log(m);},_.toArray(arguments)); 
+            }
+        };
+    },
+
+    logDebug  = colorLog(loggingSettings.debug),
+    logError  = colorLog(loggingSettings.error),
+    logWarn   = colorLog(loggingSettings.warn),
+    logInfo   = colorLog(loggingSettings.info),
+    logNotice = colorLog(loggingSettings.notice),
+    logLog    = colorLog(loggingSettings.log),
+    log       = colorLog(loggingSettings.TAS),
+    logCS     = colorLog(loggingSettings.callstack),
+    logCSA    = colorLog(loggingSettings.callstack_async),
+
+    registerCallstack = function(callstack,label){
+        var idx=_.findIndex(callstackRegistry,function(o){
+            return (_.difference(o.stack,callstack).length === _.difference(callstack,o.stack).length)
+                && _.difference(o.stack,callstack).length === 0
+                && o.label === label;
+        });
+        if(-1 === idx){
+            idx=callstackRegistry.length;
+            callstackRegistry.push({
+                stack: callstack,
+                label: label
+            });
+        }
+        return idx;
+    },
+
+    setConfigOption = function(options){
+        config = _.defaults(options,config);
+    },
+    
+    debugMode = function(){
+        config.logging.debug=true;
+        config.debugMode = true;
+    },
+
+    getCallstack = function(){
+        var e = new Error('dummy'),
+            stack = _.map(_.rest(e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+            .replace(/^\s+at\s+/gm, '')
+            .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+            .split('\n')),function(l){
+                return l.replace(/\s+.*$/,'');
+            });
+        return stack;
+    },
+    logCallstackSub = function(cs){
+        var matches, csa;
+        _.find(cs,function(line){
+            matches = line.match(/TAS_CALLSTACK_(\d+)/);
+            if(matches){
+               csa=callstackRegistry[matches[1]];
+               logCSA( '===================='+(csa.label ? '> '+csa.label+' <' : '')+'====================');
+               logCallstackSub(csa.stack);
+               return true;
+            } 
+            logCS(line);
+            return false;
+        });
+    },
+    logCallstack = function(){
+        var cs;
+        if(config.debugMode){
+            cs = getCallstack();
+            cs.shift();
+            log('==============================> CALLSTACK <==============================');
+            logCallstackSub(cs);
+            log('=========================================================================');
+        }
+    },
+
+
+    wrapCallback = function (label, callback,context){
+        var callstack;
+        if('function' === typeof label){
+            context=callback;
+            callback=label;
+            label=undefined;
+        }
+        if(!config.debugMode){
+            return (function(cb,ctx){
+                return function(){
+                    cb.apply(ctx||{},arguments);
+                };
+            }(callback,context));
+        }
+        
+        callstack = getCallstack();
+        callstack.shift();
+        
+        return (function(cb,ctx,cs,lbl){
+            var ctxref=registerCallstack(cs,lbl);
+            return new Function('cb','ctx','TASlog',
+                "return function TAS_CALLSTACK_"+ctxref+"(){"+
+                    "TASlog('Entering: '+(cb.name||'(anonymous function)'));"+
+                    "cb.apply(ctx||{},arguments);"+
+                    "TASlog('Exiting: '+(cb.name||'(anonymous function)'));"+
+                "};")(cb,ctx,log);
+        }(callback,context,callstack,label));
+    },
+
 
     prepareUpdate = function( attribute, value ){
         queuedUpdates[attribute]=value;
@@ -204,16 +464,17 @@ var TAS = TAS || (function(){
 				attrNames = [],
 				fieldNames = [],
 				operations = [],
+                after = [],
 			
-			repAttrs = function(){
+			repAttrs = function TAS_Repeating_Attrs(){
 				attrNames = namesFromArgs(arguments,attrNames);
 				return this;
 			},
-			repFields = function(){
+			repFields = function TAS_Repeating_Fields(){
 				fieldNames = namesFromArgs(arguments,fieldNames);
 				return this;
 			},
-			repReduce = function(func, initial, final, context) { 
+			repReduce = function TAS_Repeating_Reduce(func, initial, final, context) { 
 				operations.push({
                     type: 'reduce',
                     func: (func && _.isFunction(func) && func) || _.noop,
@@ -223,7 +484,7 @@ var TAS = TAS || (function(){
                 });
 				return this;
 			},
-			repMap = function(func, final, context) {
+			repMap = function TAS_Repeating_Map(func, final, context) {
 				operations.push({
                     type: 'map',
                     func: (func && _.isFunction(func) && func) || _.noop,
@@ -232,7 +493,7 @@ var TAS = TAS || (function(){
                 });
 				return this;
 			},
-            repEach = function(func, final, context) {
+            repEach = function TAS_Repeating_Each(func, final, context) {
 				operations.push({
                     type: 'each',
                     func: (func && _.isFunction(func) && func) || _.noop,
@@ -241,7 +502,7 @@ var TAS = TAS || (function(){
                 });
 				return this;
             },
-            repTap = function(final, context) {
+            repTap = function TAS_Repeating_Tap(final, context) {
 				operations.push({
                     type: 'tap',
                     final: (final && _.isFunction(final) && final) || _.noop,
@@ -249,11 +510,20 @@ var TAS = TAS || (function(){
                 });
 				return this;
             },
-			repExecute = function(){
+            repAfter = function TAS_Repeating_After(callback,context) {
+				after.push({
+                    callback: (callback && _.isFunction(callback) && callback) || _.noop,
+                    context: context || {}
+                });
+				return this;
+            },
+			repExecute = function TAS_Repeating_Execute(callback,context){
 				var rowSet = {},
 					attrSet = {},
 					fieldIds = [],
 					fullFieldNames = [];
+
+                repAfter(callback,context);
 
 				// call each operation per row.
 				// call each operation's final
@@ -317,6 +587,9 @@ var TAS = TAS || (function(){
 
                         // finalize attrs
                         applyQueuedUpdates();
+                        _.each(after,function(op){
+                            _.bind(op.callback,op.context)();
+                        });
 					});
 				});
 			};
@@ -343,6 +616,10 @@ var TAS = TAS || (function(){
                 tap: repTap,
                 'do': repTap,
 
+				after: repAfter,
+				last: repAfter,
+				done: repAfter,
+
 				execute: repExecute,
 				go: repExecute,
 				run: repExecute
@@ -368,8 +645,26 @@ var TAS = TAS || (function(){
 
 
     return {
+        /* Repeating Sections */
         repeatingSimpleSum: repeatingSimpleSum,
-		repeating: repeating
+		repeating: repeating,
+
+        /* Configuration */
+        config: setConfigOption,
+
+        /* Debugging */
+        callback: wrapCallback,
+        callstack: logCallstack,
+        debugMode: debugMode,
+        _fn: wrapCallback,
+
+        /* Logging */
+        debug: logDebug,
+        error: logError,
+        warn: logWarn,
+        info: logInfo,
+        notice: logNotice,
+        log: logLog
     };
 }());
 

@@ -672,18 +672,48 @@ var TAS = TAS || (function(){
 
 
 
+// enable debug logging
+TAS.config({logging.debug: true});
 
-on('change:repeating_inventory', function(){
-    TAS.repeating('inventory')  //< set the repeating group we are using
-        .attrs('total_weight')  //< specify we want access to the total_weight attribute
-        .fields('item','weight') //< specify we want the item and weight repeating fields 
-        .tap(function(rows,attrs){  //< tap just calls a function with the attributes and fields
-            console.log(_.keys(rows));  //< log the ids for the rows
-            console.log(_.keys(attrs)); //< log the names of the attributes
-        })
-        .execute();  //< tell TAS it has been configured and can run now.
-});
+(function(){
+	'use strict';
 
+	var string ='This is a string!',
+		integer = 8675309,
+		decimal = 3.14159265359,
+		bool = true,
+		namedFunction = function DoStuffWithThings(things){return things+'stuff';},
+		anonymousFunction = function(test){return test+test;},
+		array = [ 1, 2, 3, 'orange', 'apple', 'avacado', function thing(a){ return a+a; }],
+		object = { fruit: 'tomato', number: 42 };
+
+	
+	console.log('==> Logging Types <====================================');
+	TAS.log('TAS.log() for general messages');
+	TAS.notice('TAS.notice() for messages you want to notice that are not errors.');
+	TAS.info('TAS.info() for documenting things like status changes.');
+	TAS.warn('TAS.warn() for things that might be problems or indicate potential issues.');
+	TAS.error('TAS.error() for errors you need to be sure to notice.');
+	TAS.debug('TAS.debug() other things you want to keep track of while editing.');
+
+	console.log('==> Type Logging <=====================================');
+	TAS.debug(string);
+	TAS.debug(integer);
+	TAS.debug(decimal);
+	TAS.debug(bool);
+	TAS.debug(NaN);
+	TAS.debug(null);
+	TAS.debug(undefined);
+	TAS.debug(namedFunction);
+	TAS.debug(anonymousFunction);
+	TAS.debug(array);
+	TAS.debug(arguments);
+	TAS.debug(object);
+
+	console.log('==> Multiple Argument Support <=====================================');
+	TAS.debug(string,integer,NaN,anonymousFunction,arguments);
+
+}(1,2,'taco',['water','wine']));
 
 
 </script>
