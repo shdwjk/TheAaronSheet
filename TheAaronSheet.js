@@ -6,8 +6,8 @@
 var TAS = TAS || (function(){
     'use strict';
 
-    var version = '0.2.2',
-        lastUpdate = 1456969340,
+    var version = '0.2.3',
+        lastUpdate = 1457014728,
 
         loggingSettings = {
             debug: {
@@ -612,7 +612,7 @@ var TAS = TAS || (function(){
             .reduce(function(m,r){
                 return m + (r.F[field]);
             },0,function(t,r,a){
-                a[destination]=t;
+                a[destination].S=t;
             })
             .execute();
     };
