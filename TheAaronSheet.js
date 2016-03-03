@@ -6,8 +6,8 @@
 var TAS = TAS || (function(){
     'use strict';
 
-    var version = '0.2.1',
-        lastUpdate = 1456968811,
+    var version = '0.2.2',
+        lastUpdate = 1456969340,
 
         loggingSettings = {
             debug: {
