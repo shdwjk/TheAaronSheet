@@ -7,7 +7,7 @@ var TAS = TAS || (function(){
     'use strict';
 
     var version = '0.2.1',
-        lastUpdate = 1453794214,
+        lastUpdate = 1456968811,
 
         loggingSettings = {
             debug: {
@@ -175,7 +175,7 @@ var TAS = TAS || (function(){
 
         coloredLoggerFunction = function(message){
             console.log(
-                '%c '+label+': %c '+message,
+                '%c '+label+': %c '+message + ' ',
                 'background-color: '+lBGColor+';color: '+lTxtColor+'; font-weight:bold;',
                 'background-color: '+mBGColor+';color: '+mTxtColor+';'
             ); 
@@ -199,9 +199,9 @@ var TAS = TAS || (function(){
 
     registerCallstack = function(callstack,label){
         var idx=_.findIndex(callstackRegistry,function(o){
-            return (_.difference(o.stack,callstack).length === _.difference(callstack,o.stack).length)
-                && _.difference(o.stack,callstack).length === 0
-                && o.label === label;
+            return (_.difference(o.stack,callstack).length === _.difference(callstack,o.stack).length) &&
+                _.difference(o.stack,callstack).length === 0 &&
+                o.label === label;
         });
         if(-1 === idx){
             idx=callstackRegistry.length;
@@ -263,7 +263,7 @@ var TAS = TAS || (function(){
     },
 
 
-    wrapCallback = function (label, callback,context){
+    wrapCallback = function (label, callback, context){
         var callstack;
         if('function' === typeof label){
             context=callback;
@@ -283,12 +283,15 @@ var TAS = TAS || (function(){
         
         return (function(cb,ctx,cs,lbl){
             var ctxref=registerCallstack(cs,lbl);
+
+            /*jshint -W054 */
             return new Function('cb','ctx','TASlog',
                 "return function TAS_CALLSTACK_"+ctxref+"(){"+
                     "TASlog('Entering: '+(cb.name||'(anonymous function)'));"+
                     "cb.apply(ctx||{},arguments);"+
                     "TASlog('Exiting: '+(cb.name||'(anonymous function)'));"+
                 "};")(cb,ctx,log);
+            /*jshint +W054 */
         }(callback,context,callstack,label));
     },
 
@@ -359,8 +362,10 @@ var TAS = TAS || (function(){
 			Object.defineProperty(obj, pname, {
                 enumerable: true,
 				set: function(v){
-					pvalue=v;
-                    prepareUpdate(full_pname,v);
+                    if(v!==pvalue) {
+                        pvalue=v;
+                        prepareUpdate(full_pname,v);
+                    }
 				},
 				get: function(){
 					return pvalue;
@@ -372,8 +377,10 @@ var TAS = TAS || (function(){
                 enumerable: true,
 				set: function(v){
                     var val=v.toString();
-					pvalue=val;
-                    prepareUpdate(full_pname,val);
+                    if(val !== pvalue) {
+                        pvalue=val;
+                        prepareUpdate(full_pname,val);
+                    }
 				},
 				get: function(){
 					return pvalue.toString();
@@ -385,8 +392,10 @@ var TAS = TAS || (function(){
                 enumerable: true,
 				set: function(v){
                     var val=parseInt(v,10) || 0;
-					pvalue=val;
-                    prepareUpdate(full_pname,val);
+                    if(val !== pvalue){
+                        pvalue=val;
+                        prepareUpdate(full_pname,val);
+                    }
 				},
 				get: function(){
 					return parseInt(pvalue,10) || 0;
@@ -398,8 +407,10 @@ var TAS = TAS || (function(){
                 enumerable: true,
 				set: function(v){
                     var val=parseFloat(v) || 0;
-					pvalue=val;
-                    prepareUpdate(full_pname,val);
+                    if(val !== pvalue) {
+                        pvalue=val;
+                        prepareUpdate(full_pname,val);
+                    }
 				},
 				get: function(){
 					return parseFloat(pvalue) || 0;
@@ -410,8 +421,10 @@ var TAS = TAS || (function(){
                     enumerable: true,
                     set: function(v){
                         var val=(parseFloat(v) || 0).toFixed(d);
-                        pvalue=val;
-                        prepareUpdate(full_pname,val);
+                        if(val !== pvalue){
+                            pvalue=val;
+                            prepareUpdate(full_pname,val);
+                        }
                     },
                     get: function(){
                         return (parseFloat(pvalue) || 0).toFixed(d);
