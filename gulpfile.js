@@ -8,29 +8,25 @@ var gulp  = require('gulp'),
     print = require('gulp-print'),
 
     jsGlob = [
-        '../*.js',
+        '*.js',
         'gulpfile.js',
         'src/**/*.js'
     ];
 
-    
 gulp.task("examples", function(){
     console.log('-- Building examples ');
-
-    debugger;
 
     gulp.src('templates/examples/*.html')
         .pipe(print())
         .pipe(include())
             .on('error',console.log)
-        .pipe(gulp.dest('../examples'));
+        .pipe(gulp.dest('examples'));
 });
 
 // create a default task and just log a message
-gulp.task('default', ['watch']);
+gulp.task('default', ['examples']);
 
 // gutil.log('Gulp is running!')
-
 
 gulp.task('jshint', function() {
     return gulp.src( jsGlob )
