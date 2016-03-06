@@ -16,7 +16,7 @@ var gulp  = require('gulp'),
 gulp.task("examples", function(){
     console.log('-- Building examples ');
 
-    gulp.src('templates/examples/*.html')
+    gulp.src('src/templates/*.html')
         .pipe(print())
         .pipe(include())
             .on('error',console.log)
