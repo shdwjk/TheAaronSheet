@@ -288,8 +288,10 @@ var TAS = TAS || (function(){
             return new Function('cb','ctx','TASlog',
                 "return function TAS_CALLSTACK_"+ctxref+"(){"+
                     "TASlog('Entering: '+(cb.name||'(anonymous function)'));"+
+                    "var t0 = performance.now();" +
                     "cb.apply(ctx||{},arguments);"+
-                    "TASlog('Exiting: '+(cb.name||'(anonymous function)'));"+
+                    "var t1 = performance.now();" +
+                    "TASlog('Exiting: '+(cb.name||'(anonymous function)')+' (took '+Number(Math.round((t1-t0)+'e3')+'e-3')+' ms)');" + "};" +
                 "};")(cb,ctx,log);
             /*jshint +W054 */
         }(callback,context,callstack,label));
