@@ -4,9 +4,7 @@ A facade for Sheet Worker Tasks and Utility Functions
 ## Usage
 To use The Aaron Sheet, just copy the contents of TheAaronSheet.js into the top of your `<script type="text/worker">` section.  This will make the TAS variable available within that tag.  As confirmation that it is working, you should see the following log entry in the javascript console for your game:
 
-```
--=> TheAaronSheet v0.2.0 <=-  [Wed Nov 18 2015 08:15:02 GMT-0600 (CST)]
-```
+![TAS Version Banner](images/TASVersionBanner.png "TheAaronSheet Version Announcment in the Console Log.")
 
 Once it is active, you can reference the included functions off of the `TAS` object.
 
@@ -161,7 +159,6 @@ Reading values is as simple as referencing the property.  You don't use the `att
 ```javascript
 console.log(row.weight);
 console.log(attrSet.total_weight);
-
 ```
 
 Most of the time, you need the value in a specific format, such as a String, Integer, or Floating-Point Number. You can control the format by adding a format specifier between the `Row`/`AttrSet` and the property:
@@ -184,7 +181,7 @@ You can use 0-9 to specify how many decimal places you want.  *Note:* this retur
 | ---------------- | ----------- |
 | `.S` | String format.  Whatever value is stored in the property is converted to a string. |
 | `.I` | Integer format. The equivolent of `parseInt( value, 10 )`.  For numbers like 1.53, this will truncation the .53, use a Floating-Point format. |
-| `.F` | Floating-Point format.  The equivolent of `parseFloat( value )`.  Good for math, but see the Decimal fomrat for presentation. |
+| `.F` | Floating-Point format.  The equivolent of `parseFloat( value )`.  Good for math, but see the Decimal format for presentation. |
 | `.D[#]` | Decimal format.  The result will be a number with the given amount of decimal places from 0-9.  The type will be a string, so use Floating-Point format if you need to do math. |
 
 ##### Writing Values

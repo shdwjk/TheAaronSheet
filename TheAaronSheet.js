@@ -6,8 +6,8 @@
 var TAS = TAS || (function(){
     'use strict';
 
-    var version = '0.2.4',
-        lastUpdate = 1457098091,
+    var version = '0.2.5',
+        lastUpdate = 1504710542,
 
         loggingSettings = {
             debug: {
@@ -116,7 +116,7 @@ var TAS = TAS || (function(){
         },
 
         callstackRegistry = [],
-		queuedUpdates = {}, //< Used for delaying saves till the last momment.
+		queuedUpdates = {}, //< Used for delaying saves till the last moment.
 
     complexType = function(o){
         switch(typeof o){
@@ -174,15 +174,19 @@ var TAS = TAS || (function(){
             mTxtColor = (options.color && options.color.text) || 'white';
 
         coloredLoggerFunction = function(message){
+            /* eslint-disable no-console */
             console.log(
                 '%c '+label+': %c '+message + ' ',
                 'background-color: '+lBGColor+';color: '+lTxtColor+'; font-weight:bold;',
                 'background-color: '+mBGColor+';color: '+mTxtColor+';'
             ); 
+            /* eslint-enable no-console */
         };
         return function(){
             if('TAS'===key || config.logging[key]){
+                /* eslint-disable no-console */
                dataLogger(coloredLoggerFunction,function(m){console.log(m);},_.toArray(arguments)); 
+                /* eslint-enable no-console */
             }
         };
     },
@@ -222,6 +226,10 @@ var TAS = TAS || (function(){
         config=newconf;
     },
     
+    isDebugMode = function(){
+        return config.debugMode;
+    },
+
     debugMode = function(){
         config.logging.debug=true;
         config.debugMode = true;
@@ -229,7 +237,7 @@ var TAS = TAS || (function(){
 
     getCallstack = function(){
         var e = new Error('dummy'),
-            stack = _.map(_.rest(e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+            stack = _.map(_.rest(e.stack.replace(/^[^(]+?[\n$]/gm, '')
             .replace(/^\s+at\s+/gm, '')
             .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
             .split('\n')),function(l){
@@ -287,9 +295,12 @@ var TAS = TAS || (function(){
             /*jshint -W054 */
             return new Function('cb','ctx','TASlog',
                 "return function TAS_CALLSTACK_"+ctxref+"(){"+
+                    "var start,end;"+
                     "TASlog('Entering: '+(cb.name||'(anonymous function)'));"+
+                    "start=_.now();"+
                     "cb.apply(ctx||{},arguments);"+
-                    "TASlog('Exiting: '+(cb.name||'(anonymous function)'));"+
+                    "end=_.now();"+
+                    "TASlog('Exiting: '+(cb.name||'(anonymous function)')+' :: '+(end-start)+'ms elapsed');"+
                 "};")(cb,ctx,log);
             /*jshint +W054 */
         }(callback,context,callstack,label));
@@ -322,7 +333,7 @@ var TAS = TAS || (function(){
 	addId = function(obj,value){
 		Object.defineProperty(obj,'id',{
 			value: value,
-			writeable: false,
+			writable: false,
 			enumerable: false
 		});
 	},
@@ -330,7 +341,7 @@ var TAS = TAS || (function(){
 	addProp = function(obj,prop,value,fullname){
 		(function(){
             var pname=(_.contains(['S','F','I','D'],prop) ? '_'+prop : prop),
-			    full_pname = fullname || prop,
+                full_pname = fullname || prop,
                 pvalue=value;
 
             _.each(['S','I','F'],function(p){
@@ -617,8 +628,10 @@ var TAS = TAS || (function(){
             .execute();
     };
 
+    /* eslint-disable no-console */
 	console.log('%c•.¸¸.•*´¨`*•.¸¸.•*´¨`*•.¸  The Aaron Sheet  v'+version+'  ¸.•*´¨`*•.¸¸.•*´¨`*•.¸¸.•','background: linear-gradient(to right,green,white,white,green); color:black;text-shadow: 0 0 8px white;');
 	console.log('%c•.¸¸.•*´¨`*•.¸¸.•*´¨`*•.¸  Last update: '+(new Date(lastUpdate*1000))+'  ¸.•*´¨`*•.¸¸.•*´¨`*•.¸¸.•','background: linear-gradient(to right,green,white,white,green); color:black;text-shadow: 0 0 8px white;');
+    /* eslint-enable no-console */
 
 
     return {
@@ -633,6 +646,7 @@ var TAS = TAS || (function(){
         callback: wrapCallback,
         callstack: logCallstack,
         debugMode: debugMode,
+        isDebugMode: isDebugMode,
         _fn: wrapCallback,
 
         /* Logging */
