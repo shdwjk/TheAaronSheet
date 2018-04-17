@@ -149,8 +149,13 @@ TAS.repeating('inventory')
     .execute();
 ```
 
-#### `.execute()` (Aliases: `.go()`, `.run()`)
-When you have configured all of your Attributes, Fields, and Operations, you call `.execute()` to do all of the work.  Nothing will be done until this function is called.  It takes no arguments and returns nothing, but is responsible for doing all the work of getting and setting attributes and fields, and calling each of the operations' functions.  All of the sets will be batched and executed as a single `setAttrs()` at the end of `execute()`, which should provide a preformance increase.
+#### `.after(Final [, Context] )` (Aliases: `.last()`, `.done()`)
+Add a function to be called after the `setAttrs()` operation is called in `.execute()`.  If multiple `.after()` operations are called for, they will be executed in the order they were specified.
+
+#### `.execute([Final [, Context] ] )` (Aliases: `.go()`, `.run()`)
+When you have configured all of your Attributes, Fields, and Operations, you call `.execute()` to do all of the work.  It must be the last function called on a `TAS.repeating()` chain.  Nothing will be done until this function is called.  It returns nothing, but is responsible for doing all the work of getting and setting attributes and fields, and calling each of the operations' functions.  All of the sets will be batched and executed as a single `setAttrs()` at the end of `execute()`, which should provide a preformance increase.
+
+You can optionally provide a `Final` function and `Context` as arguments.  These work identically to `.after()` and will be the last function called in the `.after()` execution order.
 
 #### Using `AttrSet` and `Row`
 Asside from `Row`'s readonly `.id` property representing which repeating group row it corresponds to, `AttrSet` and `Row` are the same.  
