@@ -8,6 +8,9 @@
 	font-weight: bold;
 	display:  inline-block;
 }
+.sheet-inventory-row .sheet-rowid {
+	width: 15em;
+}
 .sheet-inventory-row .sheet-name {
 	width: 15em;
 }

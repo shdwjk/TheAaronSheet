@@ -1,10 +1,8 @@
-[![Gitter](https://badges.gitter.im/shdwjk/Roll20API.svg)](https://gitter.im/shdwjk/Roll20API?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 # TheAaronSheet
 A facade for Sheet Worker Tasks and Utility Functions
 
 ## Usage
-To use The Aaron Sheet, just copy the contents of TheAaronSheet.js into the top of your `<script type="text/worker">` section.  This will make the TAS variable available within that tag.  As confirmation that it is working, you should see the following log entry in the javascript console for your game:
+To use TheAaronSheet, just copy the contents of TheAaronSheet.js into the top of your `<script type="text/worker">` section.  This will make the TAS variable available within that tag.  As confirmation that it is working, you should see the following log entry in the javascript console for your game:
 
 ![TAS Version Banner](images/TASVersionBanner.png "TheAaronSheet Version Announcment in the Console Log.")
 
@@ -223,6 +221,106 @@ on('change:repeating_weapons',function(){
 ```
 
 
+### Logging Functions
+TheAaronSheet exports a selection of color-coded logging functions with type detection:
+
+![TAS Logging Exmaples](images/TASLoggingAll.png "TheAaronSheet color-coded logging function samples.")
+
+
+Each function is colored as above, with individual on-off settings.  Be default, all but Debug are turned on.  You can turn them on and off with:
+```
+TAS.config({
+  logging:{
+    log: false,
+    notice: false,
+    info: false,
+    warn: true,
+    error: true,
+    debug: true
+  }
+});
+```
+
+Additionally, debug statements can be turned on by calling TAS.debugMode().
+
+All the logging statements will do type detection on their arguments and display them in different ways:
+![TAS Logging Type Detection](images/TASLoggingDebug.png "TheAaronSheet Type Detection at work.")
+
+You can pass as many arguments to each one as you like and they will be individually logged.  This was all generated from one call to `TAS.notice()`:
+
+![TAS Logging Multiple Argument Support](images/TASLoggingNotice.png "TheAaronSheet supports multiple arguments to logging statements.")
+
+All of the logging functions are demonstrated in [Example 5](#example-5-logging-functions)
+
+## Function Wrapping
+
+TheAaronSheet provides a function called callback() which you can use to wrap your callback functions to get notices about entering and exiting the function.  
+
+*Note*: Requires `TAS.debugMode();` to be called.
+
+```
+TAS.debugMode();
+on('sheet:opened',TAS.callback(function(){
+	TAS.debug('inside anonymous function');
+}));
+```
+![TAS Function Wrapping: anonymous functions](images/TASLoggingWrapperAnonymous.png "TheAaronSheet showing a callback wrapping an anonymous function.")
+
+If you give your functions names, you'll get better information:
+```
+TAS.debugMode();
+on('sheet:opened',TAS.callback(function MySheetOpenedFunc(){
+	TAS.debug('inside named function');
+}));
+```
+![TAS Function Wrapping: named functions](images/TASLoggingWrapperNamed.png "TheAaronSheet showing a callback wrapping a named function.")
+
+
+It may be nicer to define your functions separately and pass them to the event registrations:
+```
+TAS.debugMode();
+
+var myfunc = function MySheetOpenedFunc(){
+	TAS.debug('inside named function');
+};
+
+on('sheet:opened',TAS.callback(myfunc));
+```
+*Note*: The function name will still be MySheetOpenedFunc.
+
+You can also use the shorthand `TAS._fn()` instead of `TAS.callback()` if you prefer.
+
+Function Wrapping is demonstrated in [Example 6](#example-6-callstack-tracing)
+
+
+### Callstacks
+One of the hardest things with Sheet Workers is Asynchronous function calls.  Generally, call stacks aren't helpful in figuring out what happened.  However, I've created some that are by setting up a system to log the logical call stack across Asynchronous calls.  
+
+Start by wrapping your functions with `TAS.callback()` (or `TAS._fn()`), then call `TAS.callstack()` at any point to log the current call stack, including Asynchronous calls, that caused the current function to be called.  When calling `TAS.callback()` or `TAS._fn()`, you can pass a string describing where you are calling it as the first parameter.  This string will then show up in the callstack as the label for the Asynchronous call.  Here's an example:
+
+```
+TAS.debugMode();
+
+var callback1 = function StandAloneFunction(){
+	TAS.debug('inside StandAloneFunction()');
+	TAS.callstack();
+	getAttrs(['total_weight'],TAS._fn('getAttrs( total_weight )',function InlineFunction(values){ 
+		TAS.callstack();
+		TAS.debug('InlineFunction(): got values',values); 
+	}));
+};
+
+on('sheet:opened',TAS._fn('sheet:opened',callback1));
+on('change:repeating_inventory',TAS._fn('change:repeating_inventory - test',callback1));
+```
+
+![TAS Callstack Output](images/TASLoggingCallstack.png "TheAaronSheet provides a callstack output across asynchronous calls.")
+
+In the first call stack, you can see that 'sheet:opened' caused a call to `StandAloneFunction`.
+In the second call stack, you can see the first call stack reassembled for before the async call to `getAttrs()`, and the call to `InlineFunction` by `getAttrs( total_weight )`.
+
+Callstack tracing is demonstrated in [Example 6](#example-6-callstack-tracing)
+
 ### Utility Functions
 Currently, no utility functions are needed as we now have access to underscore.js.
 
@@ -349,6 +447,87 @@ on('change:repeating_inventory', function(){
         .execute(); 
 
 });
+
+</script>
+```
+
+### Example 5: Logging Functions
+
+This shows examples of calling each of the logging functions.  See [Example 5: Logging Functions](examples/example5_logFunctions.html).
+
+```html
+<script type="text/worker">
+
+// [ Contents of TheAaronSheet.js ] //
+
+// enable debug logging
+TAS.config({logging:{debug: true}});
+
+(function(){
+	'use strict';
+
+	var string ='This is a string!',
+		integer = 8675309,
+		decimal = 3.14159265359,
+		bool = true,
+		namedFunction = function DoStuffWithThings(things){return things+'stuff';},
+		anonymousFunction = function(test){return test+test;},
+		array = [ 1, 2, 3, 'orange', 'apple', 'avacado', function thing(a){ return a+a; }],
+		object = { fruit: 'tomato', number: 42 };
+
+	
+	console.log('==> Logging Types <====================================');
+	TAS.log('TAS.log() for general messages');
+	TAS.notice('TAS.notice() for messages you want to notice that are not errors.');
+	TAS.info('TAS.info() for documenting things like status changes.');
+	TAS.warn('TAS.warn() for things that might be problems or indicate potential issues.');
+	TAS.error('TAS.error() for errors you need to be sure to notice.');
+	TAS.debug('TAS.debug() other things you want to keep track of while editing.');
+
+	console.log('==> Type Logging <=====================================');
+	TAS.debug(string);
+	TAS.debug(integer);
+	TAS.debug(decimal);
+	TAS.debug(bool);
+	TAS.debug(NaN);
+	TAS.debug(null);
+	TAS.debug(undefined);
+	TAS.debug(namedFunction);
+	TAS.debug(anonymousFunction);
+	TAS.debug(array);
+	TAS.debug(arguments);
+	TAS.debug(object);
+
+	console.log('==> Multiple Argument Support <=====================================');
+	TAS.notice(string,integer,NaN,anonymousFunction,arguments);
+
+}(1,2,'taco',['water','wine']));
+
+</script>
+```
+
+### Example 6: Callstack Tracing
+
+This example shows how Callstack tracing works.  See [Example 6: Callstack Tracing](examples/example6_callstackTracing.html).
+
+```
+<script type="text/worker">
+
+// [ Contents of TheAaronSheet.js ] //
+
+TAS.debugMode();
+
+var callback1 = function StandAloneFunction(){
+	TAS.debug('inside StandAloneFunction()');
+	TAS.callstack();
+	getAttrs(['total_weight'],TAS._fn('getAttrs( total_weight )',function InlineFunction(values){ 
+		TAS.callstack();
+		TAS.debug('InlineFunction(): got values',values); 
+	}));
+};
+
+on('sheet:opened',TAS._fn('sheet:opened',callback1));
+on('change:repeating_inventory',TAS._fn('change:repeating_inventory - test',callback1));
 
 </script>
 ```
