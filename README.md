@@ -190,7 +190,7 @@ You can use 0-9 to specify how many decimal places you want.  *Note:* this retur
 | `.D[#]` | Decimal format.  The result will be a number with the given amount of decimal places from 0-9.  The type will be a string, so use Floating-Point format if you need to do math. |
 
 ##### Writing Values
-Writing values is exactly like you would expect, you simply set the property.
+Writing values is exactly like you would expect, you simply set the property. This works only for existing attributes and fields.
 ```javascript
 attrSet.total_weight = row.I.quantity * row.F.weight;
 ```
@@ -198,6 +198,11 @@ attrSet.total_weight = row.I.quantity * row.F.weight;
 You can use the format specifiers when setting a property to cause it to be stored in that format:
 ```javascript
 attrSet.D[3].total_weight += row.I.quantity * row.F.weight;
+```
+
+To set a new attribute on a row, use `newAttr`:
+```javascript
+row.newAttr("armorAcBase", 10);
 ```
 
 Because of the way the `.repeating()` interface works, all the `setAttrs()` operations are saved until the last and handled as a single operation.  This prevents redundant writing and saves bandwidth gaining speed and performance.

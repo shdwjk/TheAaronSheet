@@ -531,6 +531,12 @@ var TAS = TAS || (function(){
 
 						rowSet = _.reduce(fieldIds,function(memo,id){
 							var r={};
+
+							r.newAttr = function newAttr(name, value) {
+								var fn = 'repeating_'+sectionName+'_'+id+'_'+name;
+								prepareUpdate(fn,value);
+							};
+
 							addId(r,id);
 							_.each(fieldNames,function(name){
 								var fn = 'repeating_'+sectionName+'_'+id+'_'+name;  
